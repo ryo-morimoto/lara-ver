@@ -1,3 +1,3 @@
-# WXT + React
+# Lara Ver - Laravelドキュメントのバージョンを固定する
 
-This template should help get you started developing with React in WXT.
+公式Laravel, readoubleのバージョンを毎回自分が見たいバージョンに変更するのがめんどうだから拡張機能にするべ

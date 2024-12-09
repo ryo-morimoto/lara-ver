@@ -26,7 +26,7 @@ importers:
         version: 18.3.1
       '@wxt-dev/module-react':
         specifier: ^1.1.1
-        version: 1.1.2(vite@5.4.11(@types/node@22.10.0))(wxt@0.19.17(@types/node@22.10.0)(rollup@4.27.4))
+        version: 1.1.2(vite@5.4.11(@types/node@22.10.0))(wxt@0.19.19(@types/node@22.10.0)(rollup@4.27.4))
       typescript:
         specifier: ^5.6.3
         version: 5.7.2
@@ -34,8 +34,8 @@ importers:
         specifier: ^2.1.8
         version: 2.1.8(@types/node@22.10.0)
       wxt:
-        specifier: ^0.19.17
-        version: 0.19.17(@types/node@22.10.0)(rollup@4.27.4)
+        specifier: ^0.19.19
+        version: 0.19.19(@types/node@22.10.0)(rollup@4.27.4)
 
 packages:
 
@@ -2117,11 +2117,6 @@ packages:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     hasBin: true
 
-  vite-node@2.1.6:
-    resolution: {integrity: sha512-DBfJY0n9JUwnyLxPSSUmEePT21j8JZp/sR9n+/gBwQU6DcQOioPdb8/pibWfXForbirSagZCilseYIwaL3f95A==}
-    engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
-    hasBin: true
-
   vite-node@2.1.8:
     resolution: {integrity: sha512-uPAwSr57kYjAUux+8E2j0q0Fxpn8M9VoyfGiRI8Kfktz9NcYMCenwY5RnZxnF1WTu3TGiYipirIzacLL3VVGFg==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -2254,8 +2249,8 @@ packages:
       utf-8-validate:
         optional: true
 
-  wxt@0.19.17:
-    resolution: {integrity: sha512-yM02qn+8F3QpJTTTDhmCUPTl6EnPwVpkCV1XFj5Ol2oUM5OIy4puwg/IdAz6QtK/3XMZzN1E8va73NtZu8WiBQ==}
+  wxt@0.19.19:
+    resolution: {integrity: sha512-m/ejGRvM7ZxlvNMHfy9pO//6qCLZmIQIt55p78MaLM4wqN5DYZIcqfr5ynnR9HmISNspMFDq54eGtkAsxT4YhA==}
     hasBin: true
 
   xdg-basedir@5.1.0:
@@ -2757,10 +2752,10 @@ snapshots:
 
   '@webext-core/match-patterns@1.0.3': {}
 
-  '@wxt-dev/module-react@1.1.2(vite@5.4.11(@types/node@22.10.0))(wxt@0.19.17(@types/node@22.10.0)(rollup@4.27.4))':
+  '@wxt-dev/module-react@1.1.2(vite@5.4.11(@types/node@22.10.0))(wxt@0.19.19(@types/node@22.10.0)(rollup@4.27.4))':
     dependencies:
       '@vitejs/plugin-react': 4.3.4(vite@5.4.11(@types/node@22.10.0))
-      wxt: 0.19.17(@types/node@22.10.0)(rollup@4.27.4)
+      wxt: 0.19.19(@types/node@22.10.0)(rollup@4.27.4)
     transitivePeerDependencies:
       - supports-color
       - vite
@@ -4360,24 +4355,6 @@ snapshots:
 
   uuid@8.3.2: {}
 
-  vite-node@2.1.6(@types/node@22.10.0):
-    dependencies:
-      cac: 6.7.14
-      debug: 4.3.7
-      es-module-lexer: 1.5.4
-      pathe: 1.1.2
-      vite: 5.4.11(@types/node@22.10.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-
   vite-node@2.1.8(@types/node@22.10.0):
     dependencies:
       cac: 6.7.14
@@ -4535,7 +4512,7 @@ snapshots:
 
   ws@8.18.0: {}
 
-  wxt@0.19.17(@types/node@22.10.0)(rollup@4.27.4):
+  wxt@0.19.19(@types/node@22.10.0)(rollup@4.27.4):
     dependencies:
       '@aklinker1/rollup-plugin-visualizer': 5.12.0(rollup@4.27.4)
       '@types/chrome': 0.0.280
@@ -4579,7 +4556,7 @@ snapshots:
       scule: 1.3.0
       unimport: 3.13.4(rollup@4.27.4)
       vite: 5.4.11(@types/node@22.10.0)
-      vite-node: 2.1.6(@types/node@22.10.0)
+      vite-node: 2.1.8(@types/node@22.10.0)
       web-ext-run: 0.2.2
       webextension-polyfill: 0.12.0
     transitivePeerDependencies:

@@ -1,42 +1,101 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #ffffff;
+  color: #333333;
+}
+
+.lara-ver-container {
+  width: 300px;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 24px;
+  margin: 0 0 8px 0;
+  text-align: center;
+  color: #FF2D20; /* Laravel red */
+}
+
+.description {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.version-selector {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  background-color: #FF2D20; /* Laravel red */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #E62419;
+}
+
+.message {
+  margin-top: 10px;
+  text-align: center;
+  color: #228B22;
+  font-size: 14px;
+}
+
+.footer {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #888;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #54bc4ae0);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 100%;
+  font-size: 14px;
+  color: #666;
 }

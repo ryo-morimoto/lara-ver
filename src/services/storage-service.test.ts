@@ -147,7 +147,7 @@ describe('storage-service', () => {
       mockStorage.sync.get.mockResolvedValue({ config: currentConfig })
 
       await storageService.updateConfig({
-        sites: { laravel: false },
+        sites: { laravel: false, readouble: true },
       })
 
       expect(mockStorage.sync.set).toHaveBeenCalledWith({

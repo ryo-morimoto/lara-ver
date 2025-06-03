@@ -16,8 +16,8 @@ function App() {
   }, [])
 
   const handleVersionChange = async (version: string) => {
-    await storageService.updateConfig({ version })
-    setConfig(prev => prev ? { ...prev, version } : null)
+    await storageService.updateConfig({ version: version as RedirectConfig['version'] })
+    setConfig(prev => prev ? { ...prev, version: version as RedirectConfig['version'] } : null)
   }
 
   const handleEnabledChange = async (enabled: boolean) => {
@@ -26,7 +26,10 @@ function App() {
   }
 
   const handleSiteChange = async (site: 'laravel' | 'readouble', enabled: boolean) => {
-    await storageService.updateConfig({ sites: { [site]: enabled } })
+    if (!config)
+      return
+    const newSites = { ...config.sites, [site]: enabled }
+    await storageService.updateConfig({ sites: newSites })
     setConfig(prev => prev
       ? {
           ...prev,

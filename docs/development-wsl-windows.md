@@ -11,6 +11,28 @@ WSLのファイルシステムとWindowsのファイルシステム間には、�
 - `\\wsl.localhost\` パス経由でのファイルアクセスでエラーが発生することがある
 - Chrome拡張機能の読み込み時に「マニフェストを読み込めませんでした」エラーが発生する場合がある
 
+## 環境設定
+
+以下のドキュメントでは、次のプレースホルダーを使用します。実際の環境に合わせて置き換えてください：
+
+- `<wsl-distro>`: WSLディストリビューション名（例：`Ubuntu`、`Ubuntu-22.04`）
+- `<username>`: WSLユーザー名（例：`ubuntu`、`myuser`）
+- `<project-path>`: プロジェクトのパス（例：`gh/github-personal/ryo-morimoto/lara-ver`）
+- `<windows-temp-path>`: Windows側の作業ディレクトリ（例：`C:\temp`）
+
+### パスの確認方法
+
+```bash
+# WSLディストリビューション名の確認
+wsl -l -v
+
+# WSLユーザー名の確認
+whoami
+
+# プロジェクトパスの確認
+pwd
+```
+
 ## 開発ワークフロー
 
 ### 1. WSL環境での開発
@@ -31,10 +53,10 @@ PowerShellを**管理者権限**で開き、以下のコマンドを実行：
 
 ```powershell
 # 作業用ディレクトリ作成
-New-Item -Path "C:\temp" -ItemType Directory -Force
+New-Item -Path "<windows-temp-path>" -ItemType Directory -Force
 
 # 拡張機能をWSLからWindowsにコピー
-Copy-Item -Path "\\wsl.localhost\Ubuntu\home\ubuntu\gh\github-personal\ryo-morimoto\lara-ver\.output\chrome-mv3" -Destination "C:\temp\lara-ver-extension" -Recurse -Force
+Copy-Item -Path "\\wsl.localhost\<wsl-distro>\home\<username>\<project-path>\.output\chrome-mv3" -Destination "<windows-temp-path>\lara-ver-extension" -Recurse -Force
 ```
 
 ### 3. Chrome拡張機能としてロード
@@ -49,7 +71,7 @@ Copy-Item -Path "\\wsl.localhost\Ubuntu\home\ubuntu\gh\github-personal\ryo-morim
 
 3. **拡張機能をロード**
    - 「パッケージ化されていない拡張機能を読み込む」をクリック
-   - `C:\temp\lara-ver-extension` を選択
+   - `<windows-temp-path>\lara-ver-extension` を選択
 
 ### 4. デバッグ・動作確認
 
@@ -95,7 +117,7 @@ Copy-Item -Path "\\wsl.localhost\Ubuntu\home\ubuntu\gh\github-personal\ryo-morim
    ```
 3. **Windowsに再コピー**
    ```powershell
-   Copy-Item -Path "\\wsl.localhost\Ubuntu\home\ubuntu\gh\github-personal\ryo-morimoto\lara-ver\.output\chrome-mv3" -Destination "C:\temp\lara-ver-extension" -Recurse -Force
+   Copy-Item -Path "\\wsl.localhost\<wsl-distro>\home\<username>\<project-path>\.output\chrome-mv3" -Destination "<windows-temp-path>\lara-ver-extension" -Recurse -Force
    ```
 4. **Chrome拡張機能管理画面でリロード**
    - 🔄 ボタンをクリック または `Ctrl+R`
@@ -107,13 +129,19 @@ Copy-Item -Path "\\wsl.localhost\Ubuntu\home\ubuntu\gh\github-personal\ryo-morim
 **update-extension.ps1**
 ```powershell
 #!/usr/bin/env pwsh
+# 環境変数の設定（必要に応じて変更）
+$WSL_DISTRO = "<wsl-distro>"
+$WSL_USERNAME = "<username>"
+$PROJECT_PATH = "<project-path>"
+$WINDOWS_TEMP_PATH = "<windows-temp-path>"
+
 Write-Host "Building extension in WSL..."
-wsl -d Ubuntu -e bash -c "cd /home/ubuntu/gh/github-personal/ryo-morimoto/lara-ver && pnpm build"
+wsl -d $WSL_DISTRO -e bash -c "cd /home/$WSL_USERNAME/$PROJECT_PATH && pnpm build"
 
 Write-Host "Copying to Windows..."
-Copy-Item -Path "\\wsl.localhost\Ubuntu\home\ubuntu\gh\github-personal\ryo-morimoto\lara-ver\.output\chrome-mv3" -Destination "C:\temp\lara-ver-extension" -Recurse -Force
+Copy-Item -Path "\\wsl.localhost\$WSL_DISTRO\home\$WSL_USERNAME\$PROJECT_PATH\.output\chrome-mv3" -Destination "$WINDOWS_TEMP_PATH\lara-ver-extension" -Recurse -Force
 
-Write-Host "Extension updated at C:\temp\lara-ver-extension"
+Write-Host "Extension updated at $WINDOWS_TEMP_PATH\lara-ver-extension"
 Write-Host "Please reload the extension in Chrome (Ctrl+R in chrome://extensions/)"
 ```
 

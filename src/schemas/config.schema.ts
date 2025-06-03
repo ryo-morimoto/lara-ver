@@ -4,13 +4,17 @@ import { AVAILABLE_VERSIONS, SUPPORTED_SITES } from '../shared/constants'
 export const versionSchema = z.enum(AVAILABLE_VERSIONS)
 export const supportedSiteSchema = z.enum(SUPPORTED_SITES)
 
+// Dynamically build sites schema from SUPPORTED_SITES constant
+const sitesSchema = z.object(
+  Object.fromEntries(
+    SUPPORTED_SITES.map(site => [site, z.boolean()]),
+  ) as Record<typeof SUPPORTED_SITES[number], z.ZodBoolean>,
+).strict() // Reject extra properties
+
 export const redirectConfigSchema = z.object({
   enabled: z.boolean(),
   version: versionSchema,
-  sites: z.object({
-    laravel: z.boolean(),
-    readouble: z.boolean(),
-  }),
+  sites: sitesSchema,
 })
 
 // Type inference from schemas

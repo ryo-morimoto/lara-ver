@@ -43,6 +43,7 @@ src/
 - [ ] `pnpm lint:fix` を実行した
 - [ ] `pnpm test` がパスした
 - [ ] 必要に応じてリファクタリングした
+- [ ] コミットメッセージ形式に従った（タイトル: 英語、説明: 日本語）
 
 ### 各レイヤーのテスト方針
 
@@ -73,6 +74,30 @@ src/
 1. Zodスキーマを単一の真実の源（Single Source of Truth）として定義
 2. TypeScript型は `z.infer<typeof schema>` で自動導出
 3. 重複した型定義は作成しない
+
+## コミットメッセージ規約
+
+### フォーマット
+```
+<type>: <title in English>
+
+<description in Japanese>
+- 変更内容の詳細説明
+- 実装した機能や修正した問題
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+### Type一覧
+- `feat`: 新機能の追加
+- `fix`: バグ修正
+- `docs`: ドキュメントのみの変更
+- `style`: コードの意味に影響しない変更（空白、フォーマット等）
+- `refactor`: バグ修正や機能追加を含まないコード変更
+- `test`: テストの追加や既存テストの修正
+- `chore`: ビルドプロセスやツール、ライブラリの変更
 
 ## その他の方針
 

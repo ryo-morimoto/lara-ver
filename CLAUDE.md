@@ -63,3 +63,24 @@ See `docs/development-guidelines.md` for detailed information about:
 - Test strategy and TDD approach
 - Schema-first development principles
 - When to write tests for each layer
+
+## Commit Message Format
+
+Use the following format for all commits:
+- **Title**: English, following conventional commits format (e.g., `feat:`, `fix:`, `docs:`)
+- **Description**: Japanese, with detailed explanation of changes
+- **Footer**: Always include Claude Code attribution
+
+Example:
+```
+feat: implement user authentication system
+
+ユーザー認証システムを実装しました。
+- JWT トークンベースの認証機能
+- ログイン・ログアウト機能
+- パスワードリセット機能
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```

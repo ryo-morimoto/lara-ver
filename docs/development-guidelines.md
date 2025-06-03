@@ -5,7 +5,7 @@
 ## アーキテクチャ方針
 
 ### レイヤー構造と責任範囲
-```
+```text
 src/
 ├── shared/        # 共通定数（AVAILABLE_VERSIONS, SUPPORTED_SITES等）
 ├── schemas/       # Zodスキーマ定義（単一の真実の源）
@@ -127,7 +127,7 @@ export type Extended = z.infer<typeof extendedSchema>
 ## コミットメッセージ規約
 
 ### フォーマット
-```
+```bash
 <type>: <title in English>
 
 <description in Japanese>

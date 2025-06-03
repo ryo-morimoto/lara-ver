@@ -29,58 +29,53 @@ pnpm test             # Run tests with Vitest
 pnpm install          # Install dependencies (Node.js >= 22.10.0 required)
 ```
 
-## Architecture
+## Architecture Overview
+
+### Layer Structure (Schema-first approach)
+```
+src/
+├── shared/        # Common constants
+├── schemas/       # Zod schema definitions (single source of truth)
+├── core/          # Business logic
+├── services/      # Application services
+└── entrypoints/   # Extension entry points
+```
 
 ### Extension Entry Points
-- **background.ts**: Service worker for extension-wide logic and state management
-- **content.ts**: Script injected into web pages (currently matches Google domains, needs updating for Laravel docs)
-- **popup/**: Extension popup UI built with React
+- **background.ts**: Minimal service worker for Manifest v3 compatibility
+- **content.ts**: Main redirect logic injected into Laravel/Readouble docs
+- **popup/**: React UI for version configuration
 
 ### Key Technologies
 - **WXT**: Modern web extension framework handling builds and hot reload
 - **React 19**: UI components for popup interface
 - **TypeScript**: Type safety across the extension
-- **Vite**: Build tooling via WXT
-- **Vitest**: Testing framework integrated with WXT
+- **Zod**: Runtime validation and type inference
+- **Vitest + React Testing Library**: Comprehensive testing
 
 ### Configuration Files
 - **wxt.config.ts**: WXT and extension manifest configuration
 - **tsconfig.json**: TypeScript compiler options
 - **eslint.config.js**: Code style rules using @antfu/eslint-config
 
+## Development Workflow (Quick Reference)
+
+1. **Schema-first**: Define Zod schemas, infer TypeScript types
+2. **TDD**: Write tests first, then implement
+3. **Quality gates**: `pnpm lint:fix` and `pnpm test` must pass
+4. **Commit format**: English title, Japanese description
+
+## Important Files
+
+- `docs/development-guidelines.md` - Detailed development policies and workflows
+- `docs/development-wsl-windows.md` - WSL + Windows debugging procedures
+- `docs/adr/` - Architecture Decision Records
+
 ## Development Notes
 
-1. The extension currently uses a basic template structure and needs implementation for Laravel documentation version locking
-2. Content script manifest needs updating from Google domains to Laravel/readouble domains
+1. Use schema-first development with Zod for type safety
+2. Follow TDD workflow: Red → Green → Refactor
 3. Pre-commit hooks automatically run linting via simple-git-hooks
 4. All extension icons are in `src/public/icon/` with multiple sizes
 5. Use pnpm as the package manager (lockfile: pnpm-lock.yaml)
-
-## Development Guidelines
-
-See `docs/development-guidelines.md` for detailed information about:
-- Architecture and layer structure
-- Test strategy and TDD approach
-- Schema-first development principles
-- When to write tests for each layer
-
-## Commit Message Format
-
-Use the following format for all commits:
-- **Title**: English, following conventional commits format (e.g., `feat:`, `fix:`, `docs:`)
-- **Description**: Japanese, with detailed explanation of changes
-- **Footer**: Always include Claude Code attribution
-
-Example:
-```
-feat: implement user authentication system
-
-ユーザー認証システムを実装しました。
-- JWT トークンベースの認証機能
-- ログイン・ログアウト機能
-- パスワードリセット機能
-
-🤖 Generated with [Claude Code](https://claude.ai/code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
+6. For WSL development, copy built extension to Windows for Chrome testing

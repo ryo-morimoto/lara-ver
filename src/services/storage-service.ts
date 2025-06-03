@@ -1,6 +1,6 @@
 import type { RedirectConfig } from '../schemas/config.schema'
 import { DEFAULT_CONFIG } from '../core/version-config'
-import { redirectConfigSchema } from '../schemas/config.schema'
+import { redirectConfigSchema, versionSchema } from '../schemas/config.schema'
 
 class StorageService {
   private readonly STORAGE_KEY = 'config'
@@ -53,6 +53,14 @@ class StorageService {
   }
 
   async updateConfig(updates: Partial<RedirectConfig>): Promise<void> {
+    // Validate individual fields if provided
+    if (updates.version !== undefined) {
+      const versionResult = versionSchema.safeParse(updates.version)
+      if (!versionResult.success) {
+        throw new Error(`Invalid version: ${versionResult.error.message}`)
+      }
+    }
+
     const currentConfig = await this.getConfig()
 
     const updatedConfig: RedirectConfig = {
@@ -65,6 +73,16 @@ class StorageService {
     }
 
     await this.setConfig(updatedConfig)
+  }
+
+  async updateVersion(version: string): Promise<void> {
+    // Parse and validate the version string
+    const versionResult = versionSchema.safeParse(version)
+    if (!versionResult.success) {
+      throw new Error(`Invalid version: ${versionResult.error.message}`)
+    }
+
+    await this.updateConfig({ version: versionResult.data })
   }
 }
 

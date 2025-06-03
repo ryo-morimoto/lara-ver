@@ -160,5 +160,110 @@ describe('storage-service', () => {
         },
       })
     })
+
+    it('should validate version when updating', async () => {
+      const currentConfig: RedirectConfig = {
+        enabled: true,
+        version: '11.x',
+        sites: {
+          laravel: true,
+          readouble: true,
+        },
+      }
+
+      mockStorage.sync.get.mockResolvedValue({ config: currentConfig })
+
+      // Test with invalid version
+      await expect(
+        storageService.updateConfig({ version: '12.x' as RedirectConfig['version'] }),
+      ).rejects.toThrow('Invalid version')
+
+      // Test with valid version
+      await expect(
+        storageService.updateConfig({ version: '10.x' }),
+      ).resolves.not.toThrow()
+    })
+  })
+
+  describe('updateVersion', () => {
+    it('should update version with valid version string', async () => {
+      const currentConfig: RedirectConfig = {
+        enabled: true,
+        version: '11.x',
+        sites: {
+          laravel: true,
+          readouble: true,
+        },
+      }
+
+      mockStorage.sync.get.mockResolvedValue({ config: currentConfig })
+
+      await storageService.updateVersion('10.x')
+
+      expect(mockStorage.sync.set).toHaveBeenCalledWith({
+        config: {
+          ...currentConfig,
+          version: '10.x',
+        },
+      })
+    })
+
+    it('should throw error for invalid version string', async () => {
+      const currentConfig: RedirectConfig = {
+        enabled: true,
+        version: '11.x',
+        sites: {
+          laravel: true,
+          readouble: true,
+        },
+      }
+
+      mockStorage.sync.get.mockResolvedValue({ config: currentConfig })
+
+      // Test with invalid version
+      await expect(
+        storageService.updateVersion('12.x'),
+      ).rejects.toThrow('Invalid version')
+
+      // Test with completely invalid format
+      await expect(
+        storageService.updateVersion('invalid'),
+      ).rejects.toThrow('Invalid version')
+
+      // Ensure storage was not called for invalid versions
+      expect(mockStorage.sync.set).not.toHaveBeenCalled()
+    })
+
+    it('should handle all valid versions from AVAILABLE_VERSIONS', async () => {
+      const currentConfig: RedirectConfig = {
+        enabled: true,
+        version: '11.x',
+        sites: {
+          laravel: true,
+          readouble: true,
+        },
+      }
+
+      mockStorage.sync.get.mockResolvedValue({ config: currentConfig })
+
+      // Test a few valid versions
+      const validVersions = ['master', '11.x', '10.x', '9.x', '5.8', '5.0']
+
+      for (const version of validVersions) {
+        vi.clearAllMocks()
+        mockStorage.sync.get.mockResolvedValue({ config: currentConfig })
+
+        await expect(
+          storageService.updateVersion(version),
+        ).resolves.not.toThrow()
+
+        expect(mockStorage.sync.set).toHaveBeenCalledWith({
+          config: {
+            ...currentConfig,
+            version,
+          },
+        })
+      }
+    })
   })
 })

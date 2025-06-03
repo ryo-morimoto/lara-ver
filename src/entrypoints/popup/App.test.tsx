@@ -57,6 +57,23 @@ describe('app', () => {
   })
 
   it('should update version when selection changes', async () => {
+    // Mock the updated config that will be returned after update
+    vi.mocked(storageService).getConfig.mockResolvedValueOnce({
+      enabled: true,
+      version: '11.x',
+      sites: {
+        laravel: true,
+        readouble: true,
+      },
+    }).mockResolvedValueOnce({
+      enabled: true,
+      version: '10.x',
+      sites: {
+        laravel: true,
+        readouble: true,
+      },
+    })
+
     render(<App />)
 
     await waitFor(() => {
@@ -65,9 +82,7 @@ describe('app', () => {
     })
 
     // eslint-disable-next-line ts/unbound-method
-    expect(vi.mocked(storageService).updateConfig).toHaveBeenCalledWith({
-      version: '10.x',
-    })
+    expect(vi.mocked(storageService).updateVersion).toHaveBeenCalledWith('10.x')
   })
 
   it('should toggle extension when enable checkbox changes', async () => {
@@ -105,7 +120,7 @@ describe('app', () => {
   })
 
   it('should show error message when version update fails', async () => {
-    vi.mocked(storageService).updateConfig.mockRejectedValue(new Error('Update failed'))
+    vi.mocked(storageService).updateVersion.mockRejectedValue(new Error('Update failed'))
 
     render(<App />)
 

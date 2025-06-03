@@ -24,8 +24,11 @@ function App() {
 
   const handleVersionChange = async (version: string) => {
     try {
-      await storageService.updateConfig({ version: version as RedirectConfig['version'] })
-      setConfig(prev => prev ? { ...prev, version: version as RedirectConfig['version'] } : null)
+      // The service layer will validate and parse the version
+      await storageService.updateVersion(version)
+      // Re-fetch config to ensure state is in sync
+      const updatedConfig = await storageService.getConfig()
+      setConfig(updatedConfig)
       setError(null)
     }
     catch (err) {

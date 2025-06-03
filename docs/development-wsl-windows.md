@@ -62,7 +62,7 @@ Copy-Item -Path "\\wsl.localhost\<wsl-distro>\home\<username>\<project-path>\.ou
 ### 3. Chrome拡張機能としてロード
 
 1. **Chrome拡張機能管理画面を開く**
-   ```
+   ```url
    chrome://extensions/
    ```
 
@@ -77,7 +77,7 @@ Copy-Item -Path "\\wsl.localhost\<wsl-distro>\home\<username>\<project-path>\.ou
 
 #### 基本動作テスト
 1. **対象サイトにアクセス**
-   ```
+   ```url
    https://laravel.com/docs/11.x/routing
    https://readouble.com/laravel/11.x/ja/routing.html
    ```
@@ -94,17 +94,17 @@ Copy-Item -Path "\\wsl.localhost\<wsl-distro>\home\<username>\<project-path>\.ou
 #### デベロッパーツールでのデバッグ
 
 1. **Background Script のデバッグ**
-   ```
+   ```text
    chrome://extensions/ → 拡張機能の「サービスワーカー」をクリック
    ```
 
 2. **Content Script のデバッグ**
-   ```
+   ```text
    対象サイトで F12 → Console タブ
    ```
 
 3. **Popup のデバッグ**
-   ```
+   ```text
    拡張機能アイコンを右クリック → 「ポップアップを検査」
    ```
 

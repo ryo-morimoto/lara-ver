@@ -2,7 +2,7 @@
   "extends": "./.wxt/tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "types": ["vitest/globals", "chrome"],
+    "types": ["vitest/globals", "chrome", "react", "react-dom"],
     "allowImportingTsExtensions": true
   }
 }

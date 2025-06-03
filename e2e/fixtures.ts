@@ -19,19 +19,14 @@ export const test = base.extend<{
     await _useContext(context)
     await context.close()
   },
-  extensionId: async ({ context: _context }, _useExtensionId) => {
-    /*
-    // Get all the pages in the context and wait
-    // for the background page to be ready
+  extensionId: async ({ context }, _useExtensionId) => {
+    // Get all the service workers in the context and wait
+    // for the background service worker to be ready
     let [background] = context.serviceWorkers()
-    if (!background)
+    if (background === undefined)
       background = await context.waitForEvent('serviceworker')
 
     const extensionId = background.url().split('/')[2]
-    await useExtensionId(extensionId)
-    */
-    // For now, we'll use a placeholder
-    // In real tests, you'd need to get the actual extension ID
-    await _useExtensionId('extension-id-placeholder')
+    await _useExtensionId(extensionId)
   },
 })

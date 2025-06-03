@@ -8,6 +8,12 @@ export class PopupPage {
     private extensionId: string,
   ) {}
 
+  private ensurePageInitialized(): void {
+    if (this.page === undefined) {
+      throw new Error('Page not initialized. Call goto() first.')
+    }
+  }
+
   async goto() {
     this.page = await this.context.newPage()
     await this.page.goto(`chrome-extension://${this.extensionId}/popup.html`)
@@ -15,26 +21,32 @@ export class PopupPage {
   }
 
   async getVersionSelect() {
+    this.ensurePageInitialized()
     return this.page.locator('select')
   }
 
   async selectVersion(version: string) {
+    this.ensurePageInitialized()
     await this.page.selectOption('select', version)
   }
 
   async toggleExtension() {
-    await this.page.click('input[type="checkbox"]')
+    this.ensurePageInitialized()
+    await this.page.click('input[type="checkbox"]:has-text("Enable extension")')
   }
 
   async isExtensionEnabled() {
-    return this.page.isChecked('input[type="checkbox"]')
+    this.ensurePageInitialized()
+    return this.page.isChecked('input[type="checkbox"]:has-text("Enable extension")')
   }
 
   async toggleSite(site: 'laravel' | 'readouble') {
+    this.ensurePageInitialized()
     await this.page.click(`input[type="checkbox"][data-site="${site}"]`)
   }
 
   async close() {
+    this.ensurePageInitialized()
     await this.page.close()
   }
 }

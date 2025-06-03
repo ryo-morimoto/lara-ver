@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient for hexagon -->
+    <linearGradient id="redGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF4A3D;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF2D20;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#CC1F15;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Shadow filter -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="2" dy="3" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.25"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Inner light effect -->
+    <radialGradient id="innerLight" cx="30%" cy="30%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Hexagon shape -->
+  <g transform="translate(64, 64)">
+    <!-- Main hexagon with gradient -->
+    <polygon points="-32,0 -16,-27.7 16,-27.7 32,0 16,27.7 -16,27.7" 
+             fill="url(#redGradient)" 
+             filter="url(#shadow)"/>
+    
+    <!-- Inner light overlay -->
+    <polygon points="-32,0 -16,-27.7 16,-27.7 32,0 16,27.7 -16,27.7" 
+             fill="url(#innerLight)"/>
+    
+    <!-- Text group -->
+    <g>
+      <!-- Main "L" letter -->
+      <text x="0" y="8" 
+            font-family="Arial, sans-serif" 
+            font-size="40" 
+            font-weight="bold" 
+            fill="white"
+            text-anchor="middle">L</text>
+      
+      <!-- Small "ver" text -->
+      <text x="0" y="22" 
+            font-family="Arial, sans-serif" 
+            font-size="12" 
+            font-weight="normal" 
+            fill="white"
+            text-anchor="middle"
+            opacity="0.9">ver</text>
+    </g>
+  </g>
+</svg>

@@ -2,6 +2,33 @@
 
 このドキュメントは、プロジェクトの詳細な開発方針、テスト戦略、およびワークフローを記載しています。
 
+## Git Workflow
+
+### GitHub Flow採用
+
+このプロジェクトは**GitHub Flow**を採用しています。
+
+**ブランチ命名規則**:
+- `main` - 本番環境に対応する安定ブランチ
+- `feature-name` - 機能追加・修正用ブランチ（`fix/`や`feature/`プレフィックスは不要）
+
+**ワークフロー**:
+1. `main`ブランチから新しいブランチを作成
+2. 機能開発・修正を実装
+3. Pull Requestを作成してレビュー
+4. CIが通ったらmainにマージ
+5. 古いブランチは削除
+
+**例**:
+```bash
+git checkout main
+git pull origin main
+git checkout -b user-authentication
+# 開発作業
+git push -u origin user-authentication
+# GitHub でPR作成
+```
+
 ## アーキテクチャ方針
 
 ### レイヤー構造と責任範囲

@@ -93,4 +93,44 @@ describe('app', () => {
       expect(screen.getByText('Lara Ver')).toBeInTheDocument()
     })
   })
+
+  it('should show error message when config loading fails', async () => {
+    vi.mocked(storageService).getConfig.mockRejectedValue(new Error('Storage error'))
+
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to load settings')).toBeInTheDocument()
+    })
+  })
+
+  it('should show error message when version update fails', async () => {
+    vi.mocked(storageService).updateConfig.mockRejectedValue(new Error('Update failed'))
+
+    render(<App />)
+
+    await waitFor(() => {
+      const versionSelect = screen.getByDisplayValue('11.x')
+      fireEvent.change(versionSelect, { target: { value: '10.x' } })
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to save version')).toBeInTheDocument()
+    })
+  })
+
+  it('should show error message when site update fails', async () => {
+    vi.mocked(storageService).updateConfig.mockRejectedValue(new Error('Update failed'))
+
+    render(<App />)
+
+    await waitFor(() => {
+      const laravelCheckbox = screen.getByRole('checkbox', { name: /laravel.com/i })
+      fireEvent.click(laravelCheckbox)
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to save laravel setting')).toBeInTheDocument()
+    })
+  })
 })

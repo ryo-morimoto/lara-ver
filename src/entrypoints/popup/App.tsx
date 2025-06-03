@@ -1,4 +1,4 @@
-import type { RedirectConfig } from '../../schemas/config.schema'
+import type { RedirectConfig, SupportedSite } from '../../schemas/config.schema'
 import { useEffect, useState } from 'react'
 import { storageService } from '../../services/storage-service'
 import { AVAILABLE_VERSIONS } from '../../shared/constants'
@@ -6,45 +6,84 @@ import './App.css'
 
 function App() {
   const [config, setConfig] = useState<RedirectConfig | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const loadConfig = async () => {
-      const currentConfig = await storageService.getConfig()
-      setConfig(currentConfig)
+      try {
+        const currentConfig = await storageService.getConfig()
+        setConfig(currentConfig)
+      }
+      catch (err) {
+        console.error('Failed to load config:', err)
+        setError('Failed to load settings')
+      }
     }
     void loadConfig()
   }, [])
 
   const handleVersionChange = async (version: string) => {
-    await storageService.updateConfig({ version: version as RedirectConfig['version'] })
-    setConfig(prev => prev ? { ...prev, version: version as RedirectConfig['version'] } : null)
+    try {
+      await storageService.updateConfig({ version: version as RedirectConfig['version'] })
+      setConfig(prev => prev ? { ...prev, version: version as RedirectConfig['version'] } : null)
+      setError(null)
+    }
+    catch (err) {
+      console.error('Failed to update version:', err)
+      setError('Failed to save version')
+    }
   }
 
   const handleEnabledChange = async (enabled: boolean) => {
-    await storageService.updateConfig({ enabled })
-    setConfig(prev => prev ? { ...prev, enabled } : null)
+    try {
+      await storageService.updateConfig({ enabled })
+      setConfig(prev => prev ? { ...prev, enabled } : null)
+      setError(null)
+    }
+    catch (err) {
+      console.error('Failed to update enabled state:', err)
+      setError('Failed to save settings')
+    }
   }
 
-  const handleSiteChange = async (site: 'laravel' | 'readouble', enabled: boolean) => {
+  const handleSiteChange = async (site: SupportedSite, enabled: boolean) => {
     if (!config)
       return
-    const newSites = { ...config.sites, [site]: enabled }
-    await storageService.updateConfig({ sites: newSites })
-    setConfig(prev => prev
-      ? {
-          ...prev,
-          sites: { ...prev.sites, [site]: enabled },
-        }
-      : null)
+
+    try {
+      const newSites = { ...config.sites, [site]: enabled }
+      await storageService.updateConfig({ sites: newSites })
+      setConfig(prev => prev
+        ? {
+            ...prev,
+            sites: { ...prev.sites, [site]: enabled },
+          }
+        : null)
+      setError(null)
+    }
+    catch (err) {
+      console.error(`Failed to update ${site} setting:`, err)
+      setError(`Failed to save ${site} setting`)
+    }
   }
 
   if (!config) {
-    return <div>Loading...</div>
+    return (
+      <div style={{ width: 300, padding: 16 }}>
+        {error !== null ? <div style={{ color: 'red' }}>{error}</div> : <div>Loading...</div>}
+      </div>
+    )
   }
 
   return (
     <div style={{ width: 300, padding: 16 }}>
       <h1>Lara Ver</h1>
+
+      {error !== null && (
+        <div style={{ color: 'red', marginBottom: 16 }}>
+          {error}
+        </div>
+      )}
 
       <div style={{ marginBottom: 16 }}>
         <label>
@@ -80,7 +119,7 @@ function App() {
           <input
             type="checkbox"
             checked={config.sites.laravel}
-            onChange={e => void handleSiteChange('laravel', e.target.checked)}
+            onChange={e => void handleSiteChange('laravel' as SupportedSite, e.target.checked)}
           />
           laravel.com
         </label>
@@ -88,7 +127,7 @@ function App() {
           <input
             type="checkbox"
             checked={config.sites.readouble}
-            onChange={e => void handleSiteChange('readouble', e.target.checked)}
+            onChange={e => void handleSiteChange('readouble' as SupportedSite, e.target.checked)}
           />
           readouble.com
         </label>

@@ -30,7 +30,7 @@ This directory contains promotional and distribution assets for the extension.
    pnpm zip
    ```
 
-2. The ZIP file will be created in `.output/wxt-react-starter-{version}-chrome.zip`
+2. The ZIP file will be created in `.output/{extension-name}-{version}-chrome.zip`
 
 3. Submit via Chrome Web Store Developer Console:
    - https://chrome.google.com/webstore/devconsole

@@ -8,12 +8,14 @@ export const test = base.extend<{
 }>({
   // eslint-disable-next-line no-empty-pattern
   context: async ({}, _useContext) => {
-    const pathToExtension = path.join(__dirname, '../.output/chrome-mv3')
+    const pathToExtension = path.resolve('.output/chrome-mv3')
     const context = await chromium.launchPersistentContext('', {
-      headless: false,
+      headless: true,
       args: [
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
+        '--no-sandbox',
+        '--disable-dev-shm-usage',
       ],
     })
     await _useContext(context)

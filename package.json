@@ -1,10 +1,20 @@
 {
-  "name": "wxt-react-starter",
+  "name": "lara-ver",
   "type": "module",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@10.11.1",
-  "description": "manifest.json description",
+  "description": "Automatically lock Laravel documentation to your preferred version",
+  "author": "Ryo Morimoto",
+  "license": "MIT",
+  "homepage": "https://github.com/ryo-morimoto/lara-ver",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryo-morimoto/lara-ver.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ryo-morimoto/lara-ver/issues"
+  },
   "engines": {
     "node": ">=22.10.0",
     "pnpm": ">=10.11.1"

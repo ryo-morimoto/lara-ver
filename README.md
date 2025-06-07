@@ -5,6 +5,19 @@
 
   <h3>Never lose your place in Laravel documentation again!</h3>
 
+  <p>
+    <a href="https://chromewebstore.google.com/detail/lara-ver-laravel-document/ejkocelonbaokgafghdmgjkohgclgghh" target="_blank">
+      <img src="https://img.shields.io/badge/Chrome-Install-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Install for Chrome">
+    </a>
+    <!-- 将来のブラウザサポート用 -->
+    <!-- <a href="#" target="_blank">
+      <img src="https://img.shields.io/badge/Firefox-Coming%20Soon-FF7139?style=for-the-badge&logo=firefox&logoColor=white" alt="Firefox (Coming Soon)">
+    </a>
+    <a href="#" target="_blank">
+      <img src="https://img.shields.io/badge/Edge-Coming%20Soon-0078D4?style=for-the-badge&logo=microsoftedge&logoColor=white" alt="Edge (Coming Soon)">
+    </a> -->
+  </p>
+  
   [![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/ryo-morimoto/lara-ver/releases)
   [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-yellow)](https://chrome.google.com/webstore)

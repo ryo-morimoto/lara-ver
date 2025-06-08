@@ -1,12 +1,20 @@
 import type { Version } from '../schemas/config.schema'
 import type { ParsedURL, URLPattern } from '../schemas/url.schema'
+import { AVAILABLE_VERSIONS } from '../shared/constants'
+
+// Laravel semantic version pattern: master, Major.x (11.x), Major.Minor (5.8)
+const VERSION_PATTERN = /master|\d+\.(?:x|\d+)/
+
+function isValidLaravelVersion(version: string): version is Version {
+  return AVAILABLE_VERSIONS.includes(version as Version)
+}
 
 const URL_PATTERNS: URLPattern[] = [
   {
     site: 'laravel',
-    pattern: /^https:\/\/laravel\.com\/docs\/(\d+\.x|master)(\/.*)?$/,
+    pattern: new RegExp(`^https:\\/\\/laravel\\.com\\/docs\\/(${VERSION_PATTERN.source})(\\/.*)?\$`),
     versionExtractor: (url: string) => {
-      const match = url.match(/\/docs\/(\d+\.x|master)/)
+      const match = url.match(new RegExp(`\\/docs\\/(${VERSION_PATTERN.source})`))
       return match ? match[1] as Version : null
     },
     urlBuilder: (baseUrl: string, version: Version, path: string) => {
@@ -15,9 +23,9 @@ const URL_PATTERNS: URLPattern[] = [
   },
   {
     site: 'readouble',
-    pattern: /^https:\/\/readouble\.com\/laravel\/(\d+\.x|master)(\/.*)?$/,
+    pattern: new RegExp(`^https:\\/\\/readouble\\.com\\/laravel\\/(${VERSION_PATTERN.source})(\\/.*)?\$`),
     versionExtractor: (url: string) => {
-      const match = url.match(/\/laravel\/(\d+\.x|master)/)
+      const match = url.match(new RegExp(`\\/laravel\\/(${VERSION_PATTERN.source})`))
       return match ? match[1] as Version : null
     },
     urlBuilder: (baseUrl: string, version: Version, path: string) => {
@@ -30,6 +38,11 @@ export function parseURL(url: string): ParsedURL | null {
   for (const pattern of URL_PATTERNS) {
     if (pattern.pattern.test(url)) {
       const version = pattern.versionExtractor(url)
+
+      if (!version || !isValidLaravelVersion(version)) {
+        return null
+      }
+
       const baseUrl = url.match(/^https:\/\/[^/]+/)?.[0] ?? ''
       const pathMatch = url.match(pattern.pattern)
       const path = pathMatch?.[2] ?? ''

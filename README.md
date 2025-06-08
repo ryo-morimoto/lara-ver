@@ -17,7 +17,7 @@
       <img src="https://img.shields.io/badge/Edge-Coming%20Soon-0078D4?style=for-the-badge&logo=microsoftedge&logoColor=white" alt="Edge (Coming Soon)">
     </a> -->
   </p>
-  
+
   [![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/ryo-morimoto/lara-ver/releases)
   [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-yellow)](https://chrome.google.com/webstore)

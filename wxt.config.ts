@@ -16,7 +16,7 @@ export default defineConfig({
     short_name: 'Lara Ver',
     description: 'Automatically lock Laravel documentation to your preferred version. Never lose your place when browsing Laravel docs!',
     version: '1.0.0',
-    author: 'Ryo Morimoto',
+    author: { email: 'ryo.morimoto.dev@gmail.com' },
     homepage_url: 'https://github.com/ryo-morimoto/lara-ver',
     icons: {
       16: 'icon/16.png',

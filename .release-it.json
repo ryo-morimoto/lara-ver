@@ -13,7 +13,7 @@
     "commitMessage": "chore: release v${version}",
     "tagName": "v${version}",
     "requireCleanWorkingDir": true,
-    "requireBranch": "main"
+    "requireBranch": false
   },
   "github": {
     "release": true,

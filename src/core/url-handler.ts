@@ -12,7 +12,7 @@ function isValidLaravelVersion(version: string): version is Version {
 const URL_PATTERNS: URLPattern[] = [
   {
     site: 'laravel',
-    pattern: new RegExp(`^https:\\/\\/laravel\\.com\\/docs\\/(${VERSION_PATTERN.source})(\\/.*)?\$`),
+    pattern: new RegExp(`^https:\\/\\/laravel\\.com\\/docs\\/(${VERSION_PATTERN.source})(\\/.*)?$`),
     versionExtractor: (url: string) => {
       const match = url.match(new RegExp(`\\/docs\\/(${VERSION_PATTERN.source})`))
       return match ? match[1] as Version : null
@@ -23,7 +23,7 @@ const URL_PATTERNS: URLPattern[] = [
   },
   {
     site: 'readouble',
-    pattern: new RegExp(`^https:\\/\\/readouble\\.com\\/laravel\\/(${VERSION_PATTERN.source})(\\/.*)?\$`),
+    pattern: new RegExp(`^https:\\/\\/readouble\\.com\\/laravel\\/(${VERSION_PATTERN.source})(\\/.*)?$`),
     versionExtractor: (url: string) => {
       const match = url.match(new RegExp(`\\/laravel\\/(${VERSION_PATTERN.source})`))
       return match ? match[1] as Version : null

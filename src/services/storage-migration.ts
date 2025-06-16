@@ -27,7 +27,7 @@ export async function migrateFromChromeStorage(): Promise<RedirectConfig | null>
 
     // Try to get data from chrome.storage
     const result = await chrome.storage.sync.get(CHROME_STORAGE_KEY)
-    const oldData = result[CHROME_STORAGE_KEY] as unknown
+    const oldData = result?.[CHROME_STORAGE_KEY] as unknown
 
     if (oldData == null) {
       // No data to migrate

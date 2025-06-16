@@ -5,4 +5,8 @@ export default antfu({
   typescript: {
     tsconfigPath: './tsconfig.json',
   },
+  ignores: [
+    '**/docs/**/*.md',
+    '**/*.md',
+  ],
 })

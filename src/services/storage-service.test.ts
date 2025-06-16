@@ -1,21 +1,48 @@
 import type { RedirectConfig } from '../schemas/config.schema'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+// Import after mocking
+import { storage } from 'wxt/utils/storage'
+
 import { DEFAULT_CONFIG } from '../core/version-config'
 import { storageService } from './storage-service'
 
-// Mock chrome.storage API
-const mockStorage = {
-  sync: {
-    get: vi.fn(),
-    set: vi.fn(),
+// Setup mocks before any imports that use them
+vi.mock('wxt/utils/storage', () => {
+  const mockStorage = {
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+  }
+  return {
+    storage: mockStorage,
+  }
+})
+
+// Mock browser runtime for WXT storage
+const mockBrowser = {
+  runtime: {
+    id: 'test-extension-id',
+  },
+  storage: {
+    sync: {
+      get: vi.fn(),
+      set: vi.fn(),
+    },
+    local: {
+      get: vi.fn(),
+      set: vi.fn(),
+    },
   },
 }
 
-vi.stubGlobal('chrome', {
-  storage: mockStorage,
-})
+vi.stubGlobal('browser', mockBrowser)
+vi.stubGlobal('chrome', mockBrowser)
 
-describe('storage-service', () => {
+const mockStorage = storage as unknown as {
+  getItem: ReturnType<typeof vi.fn>
+  setItem: ReturnType<typeof vi.fn>
+}
+
+describe('storage-service with WXT storage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -31,15 +58,15 @@ describe('storage-service', () => {
         },
       }
 
-      mockStorage.sync.get.mockResolvedValue({ config: storedConfig })
+      mockStorage.getItem.mockResolvedValue(storedConfig)
 
       const result = await storageService.getConfig()
       expect(result).toEqual(storedConfig)
-      expect(mockStorage.sync.get).toHaveBeenCalledWith('config')
+      expect(mockStorage.getItem).toHaveBeenCalledWith('sync:config')
     })
 
     it('should return default config when no config stored', async () => {
-      mockStorage.sync.get.mockResolvedValue({})
+      mockStorage.getItem.mockResolvedValue(null)
 
       const result = await storageService.getConfig()
       expect(result).toEqual(DEFAULT_CONFIG)
@@ -55,7 +82,7 @@ describe('storage-service', () => {
         },
       }
 
-      mockStorage.sync.get.mockResolvedValue({ config: invalidConfig })
+      mockStorage.getItem.mockResolvedValue(invalidConfig)
 
       const result = await storageService.getConfig()
       expect(result).toEqual(DEFAULT_CONFIG)
@@ -67,7 +94,7 @@ describe('storage-service', () => {
         // Missing version and sites
       }
 
-      mockStorage.sync.get.mockResolvedValue({ config: partialConfig })
+      mockStorage.getItem.mockResolvedValue(partialConfig)
 
       const result = await storageService.getConfig()
       expect(result).toEqual({
@@ -75,6 +102,13 @@ describe('storage-service', () => {
         version: DEFAULT_CONFIG.version,
         sites: DEFAULT_CONFIG.sites,
       })
+    })
+
+    it('should handle storage errors gracefully', async () => {
+      mockStorage.getItem.mockRejectedValue(new Error('Storage access denied'))
+
+      const result = await storageService.getConfig()
+      expect(result).toEqual(DEFAULT_CONFIG)
     })
   })
 
@@ -91,7 +125,7 @@ describe('storage-service', () => {
 
       await storageService.setConfig(newConfig)
 
-      expect(mockStorage.sync.set).toHaveBeenCalledWith({ config: newConfig })
+      expect(mockStorage.setItem).toHaveBeenCalledWith('sync:config', newConfig)
     })
 
     it('should throw error for invalid config', async () => {
@@ -122,15 +156,13 @@ describe('storage-service', () => {
         },
       }
 
-      mockStorage.sync.get.mockResolvedValue({ config: currentConfig })
+      mockStorage.getItem.mockResolvedValue(currentConfig)
 
       await storageService.updateConfig({ version: '10.x' })
 
-      expect(mockStorage.sync.set).toHaveBeenCalledWith({
-        config: {
-          ...currentConfig,
-          version: '10.x',
-        },
+      expect(mockStorage.setItem).toHaveBeenCalledWith('sync:config', {
+        ...currentConfig,
+        version: '10.x',
       })
     })
 
@@ -144,19 +176,17 @@ describe('storage-service', () => {
         },
       }
 
-      mockStorage.sync.get.mockResolvedValue({ config: currentConfig })
+      mockStorage.getItem.mockResolvedValue(currentConfig)
 
       await storageService.updateConfig({
         sites: { laravel: false, readouble: true },
       })
 
-      expect(mockStorage.sync.set).toHaveBeenCalledWith({
-        config: {
-          ...currentConfig,
-          sites: {
-            laravel: false,
-            readouble: true,
-          },
+      expect(mockStorage.setItem).toHaveBeenCalledWith('sync:config', {
+        ...currentConfig,
+        sites: {
+          laravel: false,
+          readouble: true,
         },
       })
     })
@@ -171,7 +201,7 @@ describe('storage-service', () => {
         },
       }
 
-      mockStorage.sync.get.mockResolvedValue({ config: currentConfig })
+      mockStorage.getItem.mockResolvedValue(currentConfig)
 
       // Test with invalid version
       await expect(
@@ -196,15 +226,13 @@ describe('storage-service', () => {
         },
       }
 
-      mockStorage.sync.get.mockResolvedValue({ config: currentConfig })
+      mockStorage.getItem.mockResolvedValue(currentConfig)
 
       await storageService.updateVersion('10.x')
 
-      expect(mockStorage.sync.set).toHaveBeenCalledWith({
-        config: {
-          ...currentConfig,
-          version: '10.x',
-        },
+      expect(mockStorage.setItem).toHaveBeenCalledWith('sync:config', {
+        ...currentConfig,
+        version: '10.x',
       })
     })
 
@@ -218,7 +246,7 @@ describe('storage-service', () => {
         },
       }
 
-      mockStorage.sync.get.mockResolvedValue({ config: currentConfig })
+      mockStorage.getItem.mockResolvedValue(currentConfig)
 
       // Test with invalid version
       await expect(
@@ -231,7 +259,7 @@ describe('storage-service', () => {
       ).rejects.toThrow('Invalid version')
 
       // Ensure storage was not called for invalid versions
-      expect(mockStorage.sync.set).not.toHaveBeenCalled()
+      expect(mockStorage.setItem).not.toHaveBeenCalled()
     })
 
     it('should handle all valid versions from AVAILABLE_VERSIONS', async () => {
@@ -244,24 +272,22 @@ describe('storage-service', () => {
         },
       }
 
-      mockStorage.sync.get.mockResolvedValue({ config: currentConfig })
+      mockStorage.getItem.mockResolvedValue(currentConfig)
 
       // Test a few valid versions
       const validVersions = ['master', '11.x', '10.x', '9.x', '5.8', '5.0']
 
       for (const version of validVersions) {
         vi.clearAllMocks()
-        mockStorage.sync.get.mockResolvedValue({ config: currentConfig })
+        mockStorage.getItem.mockResolvedValue(currentConfig)
 
         await expect(
           storageService.updateVersion(version),
         ).resolves.not.toThrow()
 
-        expect(mockStorage.sync.set).toHaveBeenCalledWith({
-          config: {
-            ...currentConfig,
-            version,
-          },
+        expect(mockStorage.setItem).toHaveBeenCalledWith('sync:config', {
+          ...currentConfig,
+          version,
         })
       }
     })

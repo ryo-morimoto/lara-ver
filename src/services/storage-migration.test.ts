@@ -1,7 +1,7 @@
 import type { RedirectConfig } from '../schemas/config.schema'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { DEFAULT_CONFIG } from '../core/version-config'
 import { storage } from 'wxt/utils/storage'
+import { DEFAULT_CONFIG } from '../core/version-config'
 import { migrateFromChromeStorage } from './storage-migration'
 
 // Mock browser runtime for tests
@@ -61,13 +61,13 @@ describe('storage-migration', () => {
 
       // Should read from chrome.storage
       expect(mockBrowser.storage.sync.get).toHaveBeenCalledWith('config')
-      
+
       // Should write to WXT storage
       expect(mockStorage.setItem).toHaveBeenCalledWith('sync:config', oldConfig)
-      
+
       // Should remove old data from chrome.storage
       expect(mockBrowser.storage.sync.remove).toHaveBeenCalledWith('config')
-      
+
       // Should return the migrated config
       expect(result).toEqual(oldConfig)
     })
@@ -102,14 +102,14 @@ describe('storage-migration', () => {
 
       // Should check WXT storage first
       expect(mockStorage.getItem).toHaveBeenCalledWith('sync:config')
-      
+
       // Should not read from chrome.storage
       expect(mockBrowser.storage.sync.get).not.toHaveBeenCalled()
-      
+
       // Should not write or remove anything
       expect(mockStorage.setItem).not.toHaveBeenCalled()
       expect(mockBrowser.storage.sync.remove).not.toHaveBeenCalled()
-      
+
       // Should return null (no migration needed)
       expect(result).toBeNull()
     })

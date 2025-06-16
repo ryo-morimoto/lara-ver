@@ -21,13 +21,13 @@ export async function migrateFromChromeStorage(): Promise<RedirectConfig | null>
     }
 
     // Check if chrome.storage is available (for backward compatibility)
-    if (typeof chrome === 'undefined' || !chrome.storage?.sync) {
+    if (typeof chrome === 'undefined' || chrome.storage?.sync === undefined) {
       return null
     }
 
     // Try to get data from chrome.storage
     const result = await chrome.storage.sync.get(CHROME_STORAGE_KEY)
-    const oldData = result[CHROME_STORAGE_KEY]
+    const oldData = result[CHROME_STORAGE_KEY] as unknown
 
     if (oldData == null) {
       // No data to migrate
@@ -36,7 +36,7 @@ export async function migrateFromChromeStorage(): Promise<RedirectConfig | null>
 
     // Validate the old data
     const parseResult = redirectConfigSchema.safeParse(oldData)
-    
+
     if (parseResult.success) {
       // Valid data, migrate it
       await storage.setItem(WXT_STORAGE_KEY, parseResult.data)
@@ -55,7 +55,7 @@ export async function migrateFromChromeStorage(): Promise<RedirectConfig | null>
           readouble: partialParseResult.data.sites?.readouble ?? DEFAULT_CONFIG.sites.readouble,
         },
       }
-      
+
       await storage.setItem(WXT_STORAGE_KEY, migratedConfig)
       await chrome.storage.sync.remove(CHROME_STORAGE_KEY)
       return migratedConfig
@@ -83,7 +83,7 @@ export async function isMigrationNeeded(): Promise<boolean> {
     }
 
     // Check if chrome.storage has data to migrate
-    if (typeof chrome !== 'undefined' && chrome.storage?.sync) {
+    if (typeof chrome !== 'undefined' && chrome.storage?.sync !== undefined) {
       const result = await chrome.storage.sync.get(CHROME_STORAGE_KEY)
       return result[CHROME_STORAGE_KEY] != null
     }

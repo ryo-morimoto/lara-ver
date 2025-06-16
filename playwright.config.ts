@@ -19,11 +19,22 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+      testMatch: /firefox\.spec\.ts$/,
+    },
   ],
 
   // Build the extension before running tests
-  webServer: {
-    command: 'pnpm build',
-    reuseExistingServer: process.env.CI == null,
-  },
+  webServer: [
+    {
+      command: 'pnpm build',
+      reuseExistingServer: process.env.CI == null,
+    },
+    {
+      command: 'pnpm build:firefox',
+      reuseExistingServer: process.env.CI == null,
+    },
+  ],
 })

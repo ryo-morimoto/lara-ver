@@ -12,15 +12,22 @@
   "git": {
     "commitMessage": "chore: release v${version}",
     "tagName": "v${version}",
-    "requireCleanWorkingDir": true,
-    "requireBranch": "main"
+    "requireCleanWorkingDir": false,
+    "requireBranch": "main",
+    "push": true
   },
   "github": {
     "release": true,
     "releaseName": "Release v${version}",
-    "releaseNotes": null
+    "releaseNotes": null,
+    "assets": ".output/*.zip"
   },
   "npm": {
     "publish": false
+  },
+  "ci": true,
+  "hooks": {
+    "after:bump": "pnpm install --lockfile-only",
+    "after:release": "echo '✅ Successfully released v${version}'"
   }
 }

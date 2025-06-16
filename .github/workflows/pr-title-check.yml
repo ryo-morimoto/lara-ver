@@ -25,23 +25,23 @@ jobs:
               core.setFailed(`PR title must start with one of: ${validPrefixes.join(', ')}`);
               
               // Post helpful comment
-              const comment = `## ⚠️ PR Title Format Required
-              
-Your PR title needs to follow the Conventional Commits format:
-
-- \`feat:\` - New features (→ minor version bump)
-- \`fix:\` - Bug fixes (→ patch version bump)
-- \`docs:\` - Documentation only changes
-- \`chore:\` - Maintenance tasks
-- \`refactor:\` - Code refactoring
-- \`test:\` - Adding or fixing tests
-- \`ci:\` - CI/CD changes
-- \`perf:\` - Performance improvements
-- \`style:\` - Code style changes
-
-**Example:** \`feat: add support for Laravel 12\`
-
-Please update your PR title to proceed.\`;
+              const comment = '## ⚠️ PR Title Format Required\n' +
+              '\n' +
+              'Your PR title needs to follow the Conventional Commits format:\n' +
+              '\n' +
+              '- `feat:` - New features (→ minor version bump)\n' +
+              '- `fix:` - Bug fixes (→ patch version bump)\n' +
+              '- `docs:` - Documentation only changes\n' +
+              '- `chore:` - Maintenance tasks\n' +
+              '- `refactor:` - Code refactoring\n' +
+              '- `test:` - Adding or fixing tests\n' +
+              '- `ci:` - CI/CD changes\n' +
+              '- `perf:` - Performance improvements\n' +
+              '- `style:` - Code style changes\n' +
+              '\n' +
+              '**Example:** `feat: add support for Laravel 12`\n' +
+              '\n' +
+              'Please update your PR title to proceed.';
               
               // Check if we already commented
               const comments = await github.rest.issues.listComments({

@@ -2,24 +2,17 @@ import type { RedirectConfig } from '../schemas/config.schema'
 import { storage } from 'wxt/utils/storage'
 import { DEFAULT_CONFIG } from '../core/version-config'
 import { redirectConfigSchema, versionSchema } from '../schemas/config.schema'
-import { migrateFromChromeStorage } from './storage-migration'
 
 class StorageService {
   private readonly STORAGE_KEY = 'sync:config'
 
   async getConfig(): Promise<RedirectConfig> {
     try {
-      let storedConfig = await storage.getItem<RedirectConfig>(this.STORAGE_KEY)
+      const storedConfig = await storage.getItem<RedirectConfig>(this.STORAGE_KEY)
 
-      // Try migration if no data in WXT storage
+      // Return default if no stored config
       if (storedConfig == null) {
-        const migratedConfig = await migrateFromChromeStorage()
-        if (migratedConfig != null) {
-          storedConfig = migratedConfig
-        }
-        else {
-          return DEFAULT_CONFIG
-        }
+        return DEFAULT_CONFIG
       }
 
       // Validate stored config

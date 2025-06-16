@@ -55,7 +55,6 @@ pnpm test:e2e:ui
 - `e2e/content-script.spec.ts` - Content script functionality tests
 - `e2e/storage.spec.ts` - WXT storage API tests
 - `e2e/storage-firefox.spec.ts` - Firefox-specific storage tests
-- `e2e/migration.spec.ts` - Chrome storage migration tests
 
 ## CI/CD
 

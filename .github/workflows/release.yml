@@ -9,9 +9,9 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - 'CHANGELOG.md'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
+      - CHANGELOG.md
+      - package.json
+      - pnpm-lock.yaml
 
 env:
   CI: true
@@ -76,7 +76,7 @@ jobs:
           pnpm build:firefox
           pnpm zip
           pnpm zip:firefox
-          
+
           # Verify build artifacts exist
           if [ ! -f ".output/lara-ver-chrome.zip" ] || [ ! -f ".output/lara-ver-firefox.zip" ]; then
             echo "Build artifacts not found!"
@@ -89,23 +89,23 @@ jobs:
         run: |
           # Dry run first to check everything
           pnpm release --ci --dry-run
-          
+
           # If dry run succeeds, do actual release
           pnpm release --ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Verify Release
         if: steps.check_changes.outputs.has_changes == 'true' && always()
         run: |
           # Check if the release was partially created
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "none")
           echo "Latest tag: $LATEST_TAG"
-          
+
           if [ "${{ steps.release.outcome }}" == "failure" ]; then
             echo "::warning::Release failed. Manual intervention may be required."
             echo "::warning::Latest tag: $LATEST_TAG"
-            
+
             # Check for uncommitted changes
             if [ -n "$(git status --porcelain)" ]; then
               echo "::warning::Uncommitted changes detected:"

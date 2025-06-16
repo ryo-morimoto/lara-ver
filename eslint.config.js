@@ -5,4 +5,8 @@ export default antfu({
   typescript: {
     tsconfigPath: './tsconfig.json',
   },
+  ignores: [
+    '.github/**/*.yml',
+    '.github/**/*.yaml',
+  ],
 })

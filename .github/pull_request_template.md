@@ -12,7 +12,6 @@ Example: feat: add support for Laravel 12
 
 ## Description
 
-
 ## Type of Change
 - [ ] 🚀 New feature (`feat:`)
 - [ ] 🐛 Bug fix (`fix:`)

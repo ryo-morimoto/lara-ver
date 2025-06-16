@@ -1,0 +1,16 @@
+# GitGuardian configuration
+version: 2
+
+paths-ignore:
+  - pnpm-lock.yaml
+  - package-lock.json
+  - yarn.lock
+  - '**/*.lock'
+
+# Ignore integrity hashes in lock files
+patterns-ignore:
+  - name: Package manager integrity hashes
+    pattern: 'integrity:\s*sha[0-9]+-[A-Za-z0-9+/=]+'
+
+  - name: NPM tarball URLs
+    pattern: 'https://registry\.npmjs\.org/.*/-/.*\.tgz'

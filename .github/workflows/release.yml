@@ -1,0 +1,130 @@
+name: Auto Release
+
+permissions:
+  contents: write
+  issues: read
+  pull-requests: read
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - CHANGELOG.md
+      - package.json
+      - pnpm-lock.yaml
+
+env:
+  CI: true
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          # Check if there are any tags
+          if [ -z "$(git tag -l)" ]; then
+            echo "No tags found, will create initial release"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            # Check if there are changes since last tag
+            LAST_TAG=$(git describe --tags --abbrev=0)
+            if [ -n "$(git log $LAST_TAG..HEAD --oneline)" ]; then
+              echo "Changes detected since $LAST_TAG"
+              echo "has_changes=true" >> $GITHUB_OUTPUT
+            else
+              echo "No changes since last release"
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Run lint
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: pnpm lint
+
+      - name: Run type checking
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: pnpm typecheck
+
+      - name: Run tests
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: pnpm test
+
+      - name: Build Extensions First
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          pnpm build
+          pnpm build:firefox
+          pnpm zip
+          pnpm zip:firefox
+
+          # Verify build artifacts exist
+          if [ ! -f ".output/lara-ver-chrome.zip" ] || [ ! -f ".output/lara-ver-firefox.zip" ]; then
+            echo "Build artifacts not found!"
+            exit 1
+          fi
+
+      - name: Create Release
+        if: steps.check_changes.outputs.has_changes == 'true'
+        id: release
+        run: |
+          # Dry run first to check everything
+          pnpm release --ci --dry-run
+
+          # If dry run succeeds, do actual release
+          pnpm release --ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify Release
+        if: steps.check_changes.outputs.has_changes == 'true' && always()
+        run: |
+          # Check if the release was partially created
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "none")
+          echo "Latest tag: $LATEST_TAG"
+
+          if [ "${{ steps.release.outcome }}" == "failure" ]; then
+            echo "::warning::Release failed. Manual intervention may be required."
+            echo "::warning::Latest tag: $LATEST_TAG"
+
+            # Check for uncommitted changes
+            if [ -n "$(git status --porcelain)" ]; then
+              echo "::warning::Uncommitted changes detected:"
+              git status --short
+            fi
+          fi
+
+      # Future: Auto-submit to stores (requires secrets setup)
+      # - name: Submit to Chrome Web Store
+      #   run: pnpm wxt submit --chrome --dry-run
+      #   env:
+      #     CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+      #     CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+      #     CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+      #     CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+      #
+      # - name: Submit to Firefox Add-ons
+      #   run: pnpm wxt submit --firefox --dry-run
+      #   env:
+      #     FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_EXTENSION_ID }}
+      #     FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+      #     FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}

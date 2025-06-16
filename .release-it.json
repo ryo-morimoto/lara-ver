@@ -1,0 +1,33 @@
+{
+  "$schema": "https://unpkg.com/release-it@19/schema/release-it.json",
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "preset": {
+        "name": "angular"
+      },
+      "infile": "CHANGELOG.md",
+      "header": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n\n"
+    }
+  },
+  "git": {
+    "commitMessage": "chore: release v${version}",
+    "tagName": "v${version}",
+    "requireCleanWorkingDir": false,
+    "requireBranch": "main",
+    "push": true
+  },
+  "github": {
+    "release": true,
+    "releaseName": "Release v${version}",
+    "releaseNotes": null,
+    "assets": ".output/*.zip"
+  },
+  "npm": {
+    "publish": false
+  },
+  "ci": true,
+  "hooks": {
+    "after:bump": "pnpm install --lockfile-only",
+    "after:release": "echo '✅ Successfully released v${version}'"
+  }
+}

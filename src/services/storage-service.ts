@@ -1,15 +1,16 @@
 import type { RedirectConfig } from '../schemas/config.schema'
+import { storage } from 'wxt/utils/storage'
 import { DEFAULT_CONFIG } from '../core/version-config'
 import { redirectConfigSchema, versionSchema } from '../schemas/config.schema'
 
 class StorageService {
-  private readonly STORAGE_KEY = 'config'
+  private readonly STORAGE_KEY = 'sync:config'
 
   async getConfig(): Promise<RedirectConfig> {
     try {
-      const result = await chrome.storage.sync.get(this.STORAGE_KEY)
-      const storedConfig: unknown = result[this.STORAGE_KEY]
+      const storedConfig = await storage.getItem<RedirectConfig>(this.STORAGE_KEY)
 
+      // Return default if no stored config
       if (storedConfig == null) {
         return DEFAULT_CONFIG
       }
@@ -49,7 +50,7 @@ class StorageService {
       throw new Error(`Invalid config: ${parseResult.error.message}`)
     }
 
-    await chrome.storage.sync.set({ [this.STORAGE_KEY]: parseResult.data })
+    await storage.setItem(this.STORAGE_KEY, parseResult.data)
   }
 
   async updateConfig(updates: Partial<RedirectConfig>): Promise<void> {

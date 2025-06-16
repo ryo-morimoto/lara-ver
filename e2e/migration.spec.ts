@@ -6,9 +6,9 @@ test.describe('Chrome Storage Migration', () => {
     // First, set some data using chrome.storage API directly
     await page.goto('https://example.com')
     await page.evaluate(async () => {
-      return new Promise((resolve) => {
-        // @ts-expect-error - chrome API is available in extension context
-        chrome.storage.sync.set({
+      return new Promise<void>((resolve) => {
+        // eslint-disable-next-line ts/no-unsafe-call, ts/no-unsafe-member-access
+        (globalThis as any).chrome.storage.sync.set({
           config: {
             enabled: true,
             version: '9.x',
@@ -17,7 +17,7 @@ test.describe('Chrome Storage Migration', () => {
               readouble: true,
             },
           },
-        }, resolve)
+        }, () => resolve())
       })
     })
 
@@ -41,9 +41,10 @@ test.describe('Chrome Storage Migration', () => {
 
     // Verify old data is removed from chrome.storage
     const oldData = await page.evaluate(async () => {
-      return new Promise((resolve) => {
-        // @ts-expect-error - chrome API is available
-        chrome.storage.sync.get('config', (result) => {
+      return new Promise<unknown>((resolve) => {
+        // eslint-disable-next-line ts/no-unsafe-call, ts/no-unsafe-member-access
+        (globalThis as any).chrome.storage.sync.get('config', (result: any) => {
+          // eslint-disable-next-line ts/no-unsafe-member-access
           resolve(result.config)
         })
       })

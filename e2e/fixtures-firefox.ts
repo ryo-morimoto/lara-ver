@@ -24,7 +24,7 @@ export const test = base.extend<{
     // Get the background page for Firefox
     const pages = context.pages()
     const backgroundPage = pages.find(page => page.url().includes('_generated_background_page.html'))
-    
+
     if (!backgroundPage) {
       throw new Error('Background page not found')
     }

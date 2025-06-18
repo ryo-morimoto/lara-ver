@@ -1,0 +1,176 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Get version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "version_number=${VERSION#v}" >> $GITHUB_OUTPUT
+
+      - name: Validate version in manifest
+        run: |
+          MANIFEST_VERSION=$(node -p "require('./src/manifest.json').version")
+          if [ "${MANIFEST_VERSION}" != "${{ steps.version.outputs.version_number }}" ]; then
+            echo "Error: Manifest version (${MANIFEST_VERSION}) does not match tag version (${{ steps.version.outputs.version_number }})"
+            exit 1
+          fi
+
+      - name: Build Chrome extension
+        run: |
+          pnpm build
+          pnpm zip
+
+      - name: Build Firefox extension
+        run: |
+          pnpm build:firefox
+          pnpm zip:firefox
+
+      - name: Create Firefox sources ZIP
+        id: sources
+        run: |
+          # Create a sources ZIP for Firefox review
+          SOURCE_ZIP=".output/lara-ver-${{ steps.version.outputs.version_number }}-sources.zip"
+          zip -r "${SOURCE_ZIP}" \
+            src/ \
+            package.json \
+            pnpm-lock.yaml \
+            tsconfig.json \
+            wxt.config.ts \
+            eslint.config.js \
+            vite.config.ts \
+            README.md \
+            -x "*.test.*" -x "__tests__/*" -x "*.spec.*"
+          echo "sources_zip=${SOURCE_ZIP}" >> $GITHUB_OUTPUT
+
+      - name: List build artifacts
+        run: ls -la .output/
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          release_name: Release ${{ steps.version.outputs.version }}
+          body: |
+            ## 🚀 Release ${{ steps.version.outputs.version }}
+
+            ### 📦 Download
+            - Chrome: `lara-ver-${{ steps.version.outputs.version_number }}-chrome.zip`
+            - Firefox: `lara-ver-${{ steps.version.outputs.version_number }}-firefox.zip`
+
+            ### 🔄 Auto-submission
+            Extensions will be automatically submitted to stores after this release.
+          draft: false
+          prerelease: false
+
+      - name: Upload Chrome extension
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: .output/lara-ver-${{ steps.version.outputs.version_number }}-chrome.zip
+          asset_name: lara-ver-${{ steps.version.outputs.version_number }}-chrome.zip
+          asset_content_type: application/zip
+
+      - name: Upload Firefox extension
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: .output/lara-ver-${{ steps.version.outputs.version_number }}-firefox.zip
+          asset_name: lara-ver-${{ steps.version.outputs.version_number }}-firefox.zip
+          asset_content_type: application/zip
+
+      - name: Upload Firefox sources
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.sources.outputs.sources_zip }}
+          asset_name: lara-ver-${{ steps.version.outputs.version_number }}-sources.zip
+          asset_content_type: application/zip
+
+      # Store Submission Steps (Currently in dry-run mode)
+      # Remove --dry-run flag when credentials are configured
+
+      - name: Submit to Chrome Web Store
+        if: ${{ vars.ENABLE_CHROME_SUBMISSION == 'true' }}
+        run: |
+          pnpm wxt submit \
+            --chrome-zip .output/lara-ver-${{ steps.version.outputs.version_number }}-chrome.zip \
+            --dry-run
+        env:
+          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+
+      - name: Submit to Firefox Add-ons
+        if: ${{ vars.ENABLE_FIREFOX_SUBMISSION == 'true' }}
+        run: |
+          pnpm wxt submit \
+            --firefox-zip .output/lara-ver-${{ steps.version.outputs.version_number }}-firefox.zip \
+            --firefox-sources-zip ${{ steps.sources.outputs.sources_zip }} \
+            --dry-run
+        env:
+          FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_EXTENSION_ID }}
+          FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+          FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
+
+      - name: Notify submission status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ Release ${{ steps.version.outputs.version }} completed successfully!"
+            if [ "${{ vars.ENABLE_CHROME_SUBMISSION }}" = "true" ] || [ "${{ vars.ENABLE_FIREFOX_SUBMISSION }}" = "true" ]; then
+              echo "📤 Extensions submitted to stores (dry-run mode)"
+            fi
+          else
+            echo "❌ Release ${{ steps.version.outputs.version }} failed!"
+            echo "Please check the workflow logs for details."
+          fi

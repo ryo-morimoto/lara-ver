@@ -111,6 +111,19 @@ Built with modern web technologies:
 - [Vitest](https://vitest.dev/) - Unit testing
 - [Playwright](https://playwright.dev/) - E2E testing
 
+### 🚀 Release Process
+
+This project uses automated release workflow for publishing to extension stores:
+
+1. **Version Update**: Update version in `src/manifest.json`
+2. **Create Tag**: Push a version tag (e.g., `v1.0.1`)
+3. **Automated Release**: GitHub Actions will:
+   - Build extensions for Chrome and Firefox
+   - Create GitHub release with artifacts
+   - Submit to stores automatically (when configured)
+
+See [Store Submission Setup Guide](docs/store-submission-setup.md) for configuration details.
+
 ### 🤝 Contributing
 
 Contributions are welcome! Please read our [Development Guidelines](docs/development-guidelines.md) before submitting PRs.
@@ -209,6 +222,19 @@ pnpm lint
 - [Zod](https://zod.dev/) - ランタイムバリデーション
 - [Vitest](https://vitest.dev/) - ユニットテスト
 - [Playwright](https://playwright.dev/) - E2Eテスト
+
+### 🚀 リリースプロセス
+
+このプロジェクトでは、拡張機能ストアへの公開を自動化したリリースワークフローを使用しています：
+
+1. **バージョン更新**: `src/manifest.json`のバージョンを更新
+2. **タグ作成**: バージョンタグをプッシュ（例：`v1.0.1`）
+3. **自動リリース**: GitHub Actionsが以下を実行：
+   - Chrome/Firefox向け拡張機能のビルド
+   - アーティファクト付きGitHubリリースの作成
+   - ストアへの自動送信（設定済みの場合）
+
+設定方法の詳細は[ストア送信セットアップガイド](docs/store-submission-setup.md)を参照してください。
 
 ### 🤝 コントリビューション
 
